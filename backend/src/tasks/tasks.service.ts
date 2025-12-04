@@ -28,8 +28,23 @@ export class TasksService {
     if (dto.id) {
       data.id = dto.id;
     }
+    const created = await this.prisma.task.create({ data });
 
-    return this.prisma.task.create({ data });
+    try {
+      if (userId) {
+        await this.prisma.auditLog.create({
+          data: {
+            action: 'TASK_CREATED',
+            entity: 'Task',
+            entityId: created.id,
+            details: { title: created.title, status: created.status, dueDate: created.dueDate },
+            user: { connect: { id: userId } },
+          },
+        });
+      }
+    } catch (err) {}
+
+    return created;
   }
 
   async syncTasks(tasks: CreateTaskDto[], userId: string) {
@@ -62,6 +77,20 @@ export class TasksService {
           this.redis.publish('task.created', upserted);
         } catch (err) {}
 
+        try {
+          if (userId) {
+            await this.prisma.auditLog.create({
+              data: {
+                action: 'TASK_SYNCED',
+                entity: 'Task',
+                entityId: upserted.id,
+                details: { fromClient: true, payload: JSON.parse(JSON.stringify(t)), createdAt: upserted.createdAt, updatedAt: upserted.updatedAt },
+                user: { connect: { id: userId } },
+              },
+            });
+          }
+        } catch (err) {}
+
         results.push(upserted);
       } else {
         let created = await this.createTask(t, userId);
@@ -73,6 +102,21 @@ export class TasksService {
         try {
           this.redis.publish('task.created', created);
         } catch (err) {}
+
+        try {
+          if (userId) {
+            await this.prisma.auditLog.create({
+              data: {
+                action: 'TASK_SYNCED',
+                entity: 'Task',
+                entityId: created.id,
+                details: { fromClient: false, payload: JSON.parse(JSON.stringify(t)), createdAt: created.createdAt },
+                user: { connect: { id: userId } },
+              },
+            });
+          }
+        } catch (err) {}
+
         results.push(created);
       }
     }
@@ -80,7 +124,7 @@ export class TasksService {
     return results;
   }
 
-  async updateTask(id: string, dto: UpdateTaskDto) {
+  async updateTask(id: string, dto: UpdateTaskDto, userId?: string) {
     const updated = await this.prisma.task.update({
       where: { id },
       data: {
@@ -95,16 +139,44 @@ export class TasksService {
       this.redis.publish('task.updated', updated);
     } catch (err) {}
 
+    try {
+      if (userId) {
+        await this.prisma.auditLog.create({
+          data: {
+            action: 'TASK_UPDATED',
+            entity: 'Task',
+            entityId: updated.id,
+            details: { title: updated.title, status: updated.status, dueDate: updated.dueDate },
+            user: { connect: { id: userId } },
+          },
+        });
+      }
+    } catch (err) {}
+
     return updated;
   }
 
-  async deleteTask(id: string) {
+  async deleteTask(id: string, userId?: string) {
     const deleted = await this.prisma.task.delete({
       where: { id },
     });
 
     try {
       this.redis.publish('task.deleted', deleted);
+    } catch (err) {}
+
+    try {
+      if (userId) {
+        await this.prisma.auditLog.create({
+          data: {
+            action: 'TASK_DELETED',
+            entity: 'Task',
+            entityId: deleted.id,
+            details: { title: deleted.title, status: deleted.status, deletedAt: deleted.updatedAt ?? new Date() },
+            user: { connect: { id: userId } },
+          },
+        });
+      }
     } catch (err) {}
 
     return deleted;
