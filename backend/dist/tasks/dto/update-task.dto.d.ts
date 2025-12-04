@@ -1,6 +1,7 @@
+import { TaskStatus } from '@prisma/client';
 export declare class UpdateTaskDto {
     title?: string;
     description?: string;
-    status?: string;
+    status?: TaskStatus;
     dueDate?: Date;
 }

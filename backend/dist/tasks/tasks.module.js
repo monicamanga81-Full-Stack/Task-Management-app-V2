@@ -6,18 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TaskModule = void 0;
+exports.TasksModule = void 0;
 const common_1 = require("@nestjs/common");
 const tasks_controller_1 = require("./tasks.controller");
 const tasks_service_1 = require("./tasks.service");
 const prisma_service_1 = require("../prisma/prisma.service");
-let TaskModule = class TaskModule {
+const redis_publisher_1 = require("../gateway/redis.publisher");
+let TasksModule = class TasksModule {
 };
-exports.TaskModule = TaskModule;
-exports.TaskModule = TaskModule = __decorate([
+exports.TasksModule = TasksModule;
+exports.TasksModule = TasksModule = __decorate([
     (0, common_1.Module)({
-        controllers: [tasks_controller_1.TaskController],
-        providers: [tasks_service_1.TaskService, prisma_service_1.PrismaService],
+        controllers: [tasks_controller_1.TasksController],
+        providers: [tasks_service_1.TasksService, prisma_service_1.PrismaService, redis_publisher_1.RedisPublisher],
     })
-], TaskModule);
+], TasksModule);
 //# sourceMappingURL=tasks.module.js.map

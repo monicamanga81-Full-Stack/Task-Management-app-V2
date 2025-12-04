@@ -21,8 +21,12 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async login(body) {
-        console.log("BODY FROM FRONTEND:", body);
+        console.log("LOGIN BODY:", body);
         return this.authService.login(body.email, body.password);
+    }
+    async register(body) {
+        console.log("REGISTER BODY:", body);
+        return this.authService.register(body.email, body.password, body.name);
     }
 };
 exports.AuthController = AuthController;
@@ -33,6 +37,13 @@ __decorate([
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('register'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "register", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

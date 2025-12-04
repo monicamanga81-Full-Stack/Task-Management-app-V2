@@ -18,11 +18,21 @@ let RedisPublisher = class RedisPublisher {
         this.onMessage = () => { };
     }
     onModuleInit() {
-        const host = process.env.REDIS_HOST || '127.0.0.1';
+        const host = process.env.REDIS_HOST;
+        if (!host) {
+            this.logger.warn('Redis publisher disabled (no REDIS_HOST)');
+            return;
+        }
         const port = Number(process.env.REDIS_PORT || 6380);
         this.pub = new ioredis_1.default(port, host);
         this.sub = new ioredis_1.default(port, host);
-        this.sub.subscribe('task.created', 'task.updated').catch(err => {
+        this.pub.on('error', (err) => {
+            this.logger.warn('Redis pub error', err?.message || err);
+        });
+        this.sub.on('error', (err) => {
+            this.logger.warn('Redis sub error', err?.message || err);
+        });
+        this.sub.subscribe('task.created', 'task.updated', 'task.deleted').catch(err => {
             this.logger.error(err);
         });
         this.sub.on('message', (channel, message) => {

@@ -1,50 +1,61 @@
-import { TaskService } from './tasks.service';
+import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-export declare class TaskController {
-    private readonly taskService;
-    constructor(taskService: TaskService);
+export declare class TasksController {
+    private tasksService;
+    constructor(tasksService: TasksService);
     getUserTasks(req: any): Promise<{
         id: string;
         title: string;
         description: string | null;
-        status: string;
+        status: import(".prisma/client").$Enums.TaskStatus;
         dueDate: Date | null;
         createdBy: string;
-        updatedBy: string;
+        isDeleted: boolean;
+        version: number;
+        lastSyncedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }[]>;
-    createTask(req: any, dto: CreateTaskDto): Promise<{
+    createTask(dto: CreateTaskDto, req: any): Promise<{
         id: string;
         title: string;
         description: string | null;
-        status: string;
+        status: import(".prisma/client").$Enums.TaskStatus;
         dueDate: Date | null;
         createdBy: string;
-        updatedBy: string;
+        isDeleted: boolean;
+        version: number;
+        lastSyncedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
-    updateTask(id: string, dto: UpdateTaskDto, req: any): Promise<{
+    syncTasks(body: {
+        tasks: CreateTaskDto[];
+    }, req: any): Promise<any[]>;
+    updateTask(id: string, dto: UpdateTaskDto): Promise<{
         id: string;
         title: string;
         description: string | null;
-        status: string;
+        status: import(".prisma/client").$Enums.TaskStatus;
         dueDate: Date | null;
         createdBy: string;
-        updatedBy: string;
+        isDeleted: boolean;
+        version: number;
+        lastSyncedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
-    removeTask(id: string, req: any): Promise<{
+    deleteTask(id: string): Promise<{
         id: string;
         title: string;
         description: string | null;
-        status: string;
+        status: import(".prisma/client").$Enums.TaskStatus;
         dueDate: Date | null;
         createdBy: string;
-        updatedBy: string;
+        isDeleted: boolean;
+        version: number;
+        lastSyncedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }>;

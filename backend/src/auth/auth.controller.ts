@@ -8,7 +8,13 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() body: LoginDto) {
-    console.log("BODY FROM FRONTEND:", body);  // 🔥 Debug line
+    console.log("LOGIN BODY:", body);
     return this.authService.login(body.email, body.password);
+  }
+
+  @Post('register')
+  async register(@Body() body: { email: string; password: string; name: string }) {
+    console.log("REGISTER BODY:", body);
+    return this.authService.register(body.email, body.password, body.name);
   }
 }

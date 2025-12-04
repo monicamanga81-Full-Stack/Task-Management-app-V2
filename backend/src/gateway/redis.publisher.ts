@@ -10,13 +10,27 @@ export class RedisPublisher implements OnModuleInit {
   onMessage: (channel: string, message: string) => void = () => {};
 
   onModuleInit() {
-    const host = process.env.REDIS_HOST || '127.0.0.1';
+    // Only enable Redis if REDIS_HOST is explicitly provided.
+    // This prevents accidental connection attempts in local dev where Redis isn't running.
+    const host = process.env.REDIS_HOST;
+    if (!host) {
+      this.logger.warn('Redis publisher disabled (no REDIS_HOST)');
+      return;
+    }
     const port = Number(process.env.REDIS_PORT || 6380);
 
     this.pub = new Redis(port, host);
     this.sub = new Redis(port, host);
 
-    this.sub.subscribe('task.created', 'task.updated').catch(err => {
+    // prevent unhandled "error" events from crashing the process
+    this.pub.on('error', (err) => {
+      this.logger.warn('Redis pub error', err?.message || err);
+    });
+    this.sub.on('error', (err) => {
+      this.logger.warn('Redis sub error', err?.message || err);
+    });
+
+    this.sub.subscribe('task.created', 'task.updated', 'task.deleted').catch(err => {
       this.logger.error(err);
     });
 

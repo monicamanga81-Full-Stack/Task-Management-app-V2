@@ -7,4 +7,16 @@ export declare class AuthController {
         message: string;
         access_token: string;
     }>;
+    register(body: {
+        email: string;
+        password: string;
+        name: string;
+    }): Promise<{
+        message: string;
+        user: {
+            id: string;
+            email: string;
+            name: string;
+        };
+    }>;
 }
