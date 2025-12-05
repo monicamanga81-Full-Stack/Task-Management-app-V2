@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useToast } from '../../components/ui/toast';
+import Input from '../../components/ui/Input';
+import Button from '../../components/ui/Button';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -54,17 +56,13 @@ export default function RegisterPage() {
     <div style={{ maxWidth: 420, margin: '48px auto', padding: 24, border: '1px solid #eee', borderRadius: 8 }}>
       <h2>Register</h2>
       <form onSubmit={handleRegister}>
-        <div style={{ marginBottom: 12 }}>
-          <label>Email</label>
-          <input value={email} onChange={e => setEmail(e.target.value)} required style={{ width: '100%', padding: 8 }} />
+        <Input label="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+        <Input label="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+        <div style={{ textAlign: 'right' }}>
+          <Button type="submit" variant="primary" disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
+          </Button>
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>Password</label>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required style={{ width: '100%', padding: 8 }} />
-        </div>
-        <button type="submit" style={{ padding: '8px 16px' }} disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
       </form>
       <p style={{ marginTop: 12 }}>
         Have an account? <a href="/login">Login</a>

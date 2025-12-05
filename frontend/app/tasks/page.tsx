@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../../components/ui/toast';
 import { createSocket } from '../../lib/socket';
+import Input from '../../components/ui/Input';
+import Textarea from '../../components/ui/Textarea';
+import Button from '../../components/ui/Button';
 
 type Task = {
   id: string;
@@ -162,10 +165,10 @@ export default function TasksPage() {
     <div style={{ maxWidth: 900, margin: '36px auto', padding: 24 }}>
       <h1>Tasks</h1>
       <form onSubmit={handleCreate} style={{ marginBottom: 20 }}>
-        <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} required style={{ padding: 8, width: '100%', marginBottom: 8 }} />
-        <textarea placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} style={{ padding: 8, width: '100%', marginBottom: 8 }} />
+        <Input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} required />
+        <Textarea placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
         <div style={{ textAlign: 'right' }}>
-          <button type="submit">Create</button>
+          <Button type="submit" variant="primary">Create</Button>
         </div>
       </form>
 
@@ -177,8 +180,8 @@ export default function TasksPage() {
             <li key={t.id} style={{ padding: 12, borderBottom: '1px solid #eee' }}>
               {editingTaskId === t.id ? (
                 <div>
-                  <input value={editTitle} onChange={e => setEditTitle(e.target.value)} style={{ width: '60%', padding: 6, marginBottom: 6 }} />
-                  <textarea value={editDescription} onChange={e => setEditDescription(e.target.value)} style={{ width: '100%', padding: 6, marginBottom: 6 }} />
+                  <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} style={{ width: '60%' }} />
+                  <Textarea value={editDescription} onChange={e => setEditDescription(e.target.value)} />
                   <div style={{ marginBottom: 8 }}>
                     <select value={editStatus} onChange={e => setEditStatus(e.target.value as Task['status'])}>
                       <option value="PENDING">PENDING</option>
@@ -187,8 +190,8 @@ export default function TasksPage() {
                     </select>
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => saveEdit(t.id)}>Save</button>
-                    <button onClick={cancelEdit}>Cancel</button>
+                    <Button onClick={() => saveEdit(t.id)} variant="primary">Save</Button>
+                    <Button onClick={cancelEdit} variant="neutral">Cancel</Button>
                   </div>
                 </div>
               ) : (
@@ -199,8 +202,8 @@ export default function TasksPage() {
                   </div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <div style={{ marginRight: 12 }}>{t.status}</div>
-                    <button onClick={() => startEdit(t)}>Edit</button>
-                    <button onClick={() => handleDelete(t.id)} style={{ color: 'red' }}>Delete</button>
+                    <Button onClick={() => startEdit(t)}>Edit</Button>
+                    <Button onClick={() => handleDelete(t.id)} variant="danger">Delete</Button>
                   </div>
                 </div>
               )}
