@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useToast } from '../../components/ui/toast';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function LoginPage() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: 'Login failed' }));
-        alert(err.message || 'Login failed');
+        toast({ title: 'Login failed', description: err.message || 'Unable to login' });
         return;
       }
 
@@ -28,18 +29,18 @@ export default function LoginPage() {
       // expect { access_token: '...' } or { token: '...' }
       const token = body.access_token || body.token || body.accessToken;
       if (!token) {
-        alert('Login did not return a token');
+        toast({ title: 'Login failed', description: 'Login did not return a token' });
         return;
       }
-
       localStorage.setItem('token', token);
       localStorage.setItem('userEmail', email);
+      toast({ title: 'Logged in' });
       router.push('/dashboard');
     } catch (err) {
       // network or unexpected error
       // eslint-disable-next-line no-console
       console.error(err);
-      alert('Unable to reach server. Please try again later.');
+      toast({ title: 'Network error', description: 'Unable to reach server. Please try again later.' });
     }
   }
 

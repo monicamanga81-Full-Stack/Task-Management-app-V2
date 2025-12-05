@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useToast } from '../../components/ui/toast';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,16 +21,17 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: 'Registration failed' }));
-        alert(err.message || 'Registration failed');
+        toast({ title: 'Registration failed', description: err.message || 'Unable to register' });
         return;
       }
 
+      toast({ title: 'Registered', description: 'Please login with your credentials' });
       // On success navigate to login
       router.push('/login');
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
-      alert('Unable to reach server. Please try again later.');
+      toast({ title: 'Network error', description: 'Unable to reach server. Please try again later.' });
     }
   }
 
