@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '../../components/ui/toast';
+import { createSocket } from '../../lib/socket';
 
 type Task = {
   id: string;
@@ -28,6 +29,26 @@ export default function TasksPage() {
     const token = localStorage.getItem('token');
     if (!token) router.push('/login');
     fetchTasks();
+    // setup socket listeners
+    const s = createSocket();
+    s.on('task.created', (payload: any) => {
+      setTasks(prev => [payload, ...prev.filter(p => p.id !== payload.id)]);
+      toast({ title: 'Task created (live)', description: payload.title });
+    });
+    s.on('task.updated', (payload: any) => {
+      setTasks(prev => prev.map(p => (p.id === payload.id ? payload : p)));
+      toast({ title: 'Task updated (live)', description: payload.title });
+    });
+    s.on('task.deleted', (payload: any) => {
+      setTasks(prev => prev.filter(p => p.id !== payload.id));
+      toast({ title: 'Task deleted (live)' });
+    });
+
+    return () => {
+      s.off('task.created');
+      s.off('task.updated');
+      s.off('task.deleted');
+    };
   }, []);
 
   async function fetchTasks() {
