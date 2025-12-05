@@ -19,6 +19,10 @@ export default function TasksPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editStatus, setEditStatus] = useState<Task['status']>('PENDING');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -71,6 +75,68 @@ export default function TasksPage() {
     }
   }
 
+  function startEdit(t: Task) {
+    setEditingTaskId(t.id);
+    setEditTitle(t.title);
+    setEditDescription(t.description || '');
+    setEditStatus(t.status);
+  }
+
+  function cancelEdit() {
+    setEditingTaskId(null);
+    setEditTitle('');
+    setEditDescription('');
+  }
+
+  async function saveEdit(taskId: string) {
+    try {
+      const token = localStorage.getItem('token');
+      const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+      const res = await fetch(`${backend}/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: editTitle, description: editDescription, status: editStatus }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Update failed' }));
+        toast({ title: 'Update failed', description: err.message });
+        return;
+      }
+      const updated = await res.json();
+      setTasks(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+      toast({ title: 'Task updated' });
+      cancelEdit();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      toast({ title: 'Network error', description: 'Unable to reach server' });
+    }
+  }
+
+  async function handleDelete(taskId: string) {
+    const ok = window.confirm('Delete this task?');
+    if (!ok) return;
+    try {
+      const token = localStorage.getItem('token');
+      const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+      const res = await fetch(`${backend}/tasks/${taskId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Delete failed' }));
+        toast({ title: 'Delete failed', description: err.message });
+        return;
+      }
+      setTasks(prev => prev.filter(p => p.id !== taskId));
+      toast({ title: 'Task deleted' });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      toast({ title: 'Network error', description: 'Unable to reach server' });
+    }
+  }
+
   return (
     <div style={{ maxWidth: 900, margin: '36px auto', padding: 24 }}>
       <h1>Tasks</h1>
@@ -88,13 +154,35 @@ export default function TasksPage() {
         <ul>
           {tasks.map(t => (
             <li key={t.id} style={{ padding: 12, borderBottom: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              {editingTaskId === t.id ? (
                 <div>
-                  <strong>{t.title}</strong>
-                  <div style={{ opacity: 0.9 }}>{t.description}</div>
+                  <input value={editTitle} onChange={e => setEditTitle(e.target.value)} style={{ width: '60%', padding: 6, marginBottom: 6 }} />
+                  <textarea value={editDescription} onChange={e => setEditDescription(e.target.value)} style={{ width: '100%', padding: 6, marginBottom: 6 }} />
+                  <div style={{ marginBottom: 8 }}>
+                    <select value={editStatus} onChange={e => setEditStatus(e.target.value as Task['status'])}>
+                      <option value="PENDING">PENDING</option>
+                      <option value="IN_PROGRESS">IN_PROGRESS</option>
+                      <option value="COMPLETED">COMPLETED</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={() => saveEdit(t.id)}>Save</button>
+                    <button onClick={cancelEdit}>Cancel</button>
+                  </div>
                 </div>
-                <div>{t.status}</div>
-              </div>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <strong>{t.title}</strong>
+                    <div style={{ opacity: 0.9 }}>{t.description}</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div style={{ marginRight: 12 }}>{t.status}</div>
+                    <button onClick={() => startEdit(t)}>Edit</button>
+                    <button onClick={() => handleDelete(t.id)} style={{ color: 'red' }}>Delete</button>
+                  </div>
+                </div>
+              )}
             </li>
           ))}
         </ul>
