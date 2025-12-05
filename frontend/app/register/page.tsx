@@ -8,10 +8,29 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  function handleRegister(e: React.FormEvent) {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
-    // Minimal example: pretend to register then navigate to login
-    router.push('/login');
+    try {
+      const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+      const res = await fetch(`${backend}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Registration failed' }));
+        alert(err.message || 'Registration failed');
+        return;
+      }
+
+      // On success navigate to login
+      router.push('/login');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      alert('Unable to reach server. Please try again later.');
+    }
   }
 
   return (

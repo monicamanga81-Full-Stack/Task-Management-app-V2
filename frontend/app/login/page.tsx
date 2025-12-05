@@ -8,13 +8,39 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // For this minimal example we accept any credentials
-    // and store a dummy token in localStorage to simulate login.
-    localStorage.setItem('token', 'dummy-token');
-    localStorage.setItem('userEmail', email);
-    router.push('/dashboard');
+    try {
+      const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+      const res = await fetch(`${backend}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Login failed' }));
+        alert(err.message || 'Login failed');
+        return;
+      }
+
+      const body = await res.json();
+      // expect { access_token: '...' } or { token: '...' }
+      const token = body.access_token || body.token || body.accessToken;
+      if (!token) {
+        alert('Login did not return a token');
+        return;
+      }
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('userEmail', email);
+      router.push('/dashboard');
+    } catch (err) {
+      // network or unexpected error
+      // eslint-disable-next-line no-console
+      console.error(err);
+      alert('Unable to reach server. Please try again later.');
+    }
   }
 
   return (
