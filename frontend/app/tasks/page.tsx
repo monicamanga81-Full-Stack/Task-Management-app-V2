@@ -162,12 +162,12 @@ export default function TasksPage() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '36px auto', padding: 24 }}>
-      <h1>Tasks</h1>
-      <form onSubmit={handleCreate} style={{ marginBottom: 20 }}>
+    <div className="max-w-4xl mx-auto mt-8 p-6">
+      <h1 className="text-2xl font-semibold mb-4">Tasks</h1>
+      <form onSubmit={handleCreate} className="mb-6">
         <Input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} required />
         <Textarea placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
-        <div style={{ textAlign: 'right' }}>
+        <div className="text-right">
           <Button type="submit" variant="primary">Create</Button>
         </div>
       </form>

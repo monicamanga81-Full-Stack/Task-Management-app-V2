@@ -13,11 +13,11 @@ export default function Modal({ open, title, onClose, children }: ModalProps) {
   if (!open) return null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}>
-      <div style={{ background: 'white', padding: 16, borderRadius: 8, width: '90%', maxWidth: 640 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white p-4 rounded-lg w-[90%] max-w-2xl">
+        <div className="flex items-center justify-between mb-2">
           <strong>{title}</strong>
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>✕</button>
+          <button onClick={onClose} className="text-gray-600 hover:text-gray-900">✕</button>
         </div>
         <div>{children}</div>
       </div>

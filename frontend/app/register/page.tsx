@@ -53,19 +53,19 @@ export default function RegisterPage() {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: '48px auto', padding: 24, border: '1px solid #eee', borderRadius: 8 }}>
-      <h2>Register</h2>
+    <div className="max-w-md mx-auto mt-12 p-6 border rounded-lg">
+      <h2 className="text-2xl font-semibold mb-4">Register</h2>
       <form onSubmit={handleRegister}>
         <Input label="Email" value={email} onChange={e => setEmail(e.target.value)} required />
         <Input label="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-        <div style={{ textAlign: 'right' }}>
+        <div className="text-right">
           <Button type="submit" variant="primary" disabled={loading}>
             {loading ? 'Registering...' : 'Register'}
           </Button>
         </div>
       </form>
-      <p style={{ marginTop: 12 }}>
-        Have an account? <a href="/login">Login</a>
+      <p className="mt-3 text-sm">
+        Have an account? <a href="/login" className="text-blue-600">Login</a>
       </p>
     </div>
   );

@@ -62,19 +62,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: '48px auto', padding: 24, border: '1px solid #eee', borderRadius: 8 }}>
-      <h2>Login</h2>
+    <div className="max-w-md mx-auto mt-12 p-6 border rounded-lg">
+      <h2 className="text-2xl font-semibold mb-4">Login</h2>
       <form onSubmit={handleSubmit}>
         <Input label="Email" value={email} onChange={e => setEmail(e.target.value)} required />
         <Input label="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-        <div style={{ textAlign: 'right' }}>
+        <div className="text-right">
           <Button type="submit" variant="primary" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </Button>
         </div>
       </form>
-      <p style={{ marginTop: 12 }}>
-        Don't have an account? <a href="/register">Register</a>
+      <p className="mt-3 text-sm">
+        Don't have an account? <a href="/register" className="text-blue-600">Register</a>
       </p>
     </div>
   );

@@ -8,9 +8,9 @@ type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
 
 export default function Textarea({ label, style, ...props }: TextareaProps) {
   return (
-    <div style={{ marginBottom: 8 }}>
-      {label && <label style={{ display: 'block', marginBottom: 6 }}>{label}</label>}
-      <textarea {...props} style={{ padding: 8, width: '100%', minHeight: 80, boxSizing: 'border-box', ...(style as any) }} />
+    <div className="mb-3">
+      {label && <label className="block mb-1 text-sm font-medium">{label}</label>}
+      <textarea {...props} className={`w-full p-2 border rounded min-h-[80px] ${props.className || ''}`} />
     </div>
   );
 }
