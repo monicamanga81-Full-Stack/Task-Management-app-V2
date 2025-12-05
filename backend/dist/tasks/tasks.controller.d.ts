@@ -6,6 +6,8 @@ export declare class TasksController {
     constructor(tasksService: TasksService);
     getUserTasks(req: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string | null;
         status: import(".prisma/client").$Enums.TaskStatus;
@@ -14,11 +16,11 @@ export declare class TasksController {
         isDeleted: boolean;
         version: number;
         lastSyncedAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     createTask(dto: CreateTaskDto, req: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string | null;
         status: import(".prisma/client").$Enums.TaskStatus;
@@ -27,14 +29,14 @@ export declare class TasksController {
         isDeleted: boolean;
         version: number;
         lastSyncedAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     syncTasks(body: {
         tasks: CreateTaskDto[];
     }, req: any): Promise<any[]>;
     updateTask(id: string, dto: UpdateTaskDto): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string | null;
         status: import(".prisma/client").$Enums.TaskStatus;
@@ -43,11 +45,11 @@ export declare class TasksController {
         isDeleted: boolean;
         version: number;
         lastSyncedAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     deleteTask(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string | null;
         status: import(".prisma/client").$Enums.TaskStatus;
@@ -56,7 +58,5 @@ export declare class TasksController {
         isDeleted: boolean;
         version: number;
         lastSyncedAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }
